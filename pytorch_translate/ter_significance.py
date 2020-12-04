@@ -25,11 +25,10 @@ def get_sufficient_stats(
             references=[ref],
             case_sensitive=True,
             normalized=True)
-        sufficient_stats.append([sentence_ter.score, sentence_ter.num_edits, sentence_ter.ref_length])
+        sufficient_stats.append([sentence_ter.num_edits, sentence_ter.ref_length])
     return pd.DataFrame(
         sufficient_stats,
         columns=[
-            "score",
             "num_edits",
             "ref_length",
         ],
@@ -49,7 +48,8 @@ class PairedBootstrapOutput(NamedTuple):
 
 
 def compute_ter_from_stats(stats: pd.DataFrame):
-    return stats.score.mean(axis=0)
+    corpus_stats = stats.sum(axis=0)
+    return corpus_stats.num_edits / corpus_stats.ref_length
 
 
 def paired_bootstrap_resample(
